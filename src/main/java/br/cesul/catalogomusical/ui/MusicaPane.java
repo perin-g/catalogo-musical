@@ -18,17 +18,17 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 
-// Aba "Músicas" — CRUD completo (cria, lê, edita, apaga).
-// Versão piloto: tudo já implementado, inclusive editar e excluir.
+// Aba "Músicas".
+// Listar e adicionar já vem pronto, igual a aba de novo jogador do quiz.
+// Faltam editar e excluir (estão como // TODO).
 
-// Layout:
-//   - topo:    formulário (título, artista, album, duração, gênero)
-//              + botões "Adicionar/Salvar" e "Limpar"
-//   - centro:  tabela de músicas (TableView)
-//   - rodapé:  botões "Editar selecionada" e "Excluir selecionada"
+// Esta classe herda de BorderPane (um layout do JavaFX que tem 5 regiões:
+// top, bottom, left, right, center). A gente coloca o formulário no
+// topo e a tabela no centro.
 
 public class MusicaPane extends BorderPane implements Refreshable {
 
+    // DAO da camada de banco
     private final MusicaDao dao = new MusicaDao();
 
     // Lista observable que alimenta a tabela.
@@ -36,20 +36,14 @@ public class MusicaPane extends BorderPane implements Refreshable {
     private final ObservableList<Musica> data = FXCollections.observableArrayList();
     private final TableView<Musica> table = new TableView<>(data);
 
+    // Campos do formulário (declarados aqui em cima porque vários métodos
+    // mexem com eles: adicionar, editar, limpar...).
     private final TextField tTitulo  = txt("Título");
     private final TextField tArtista = txt("Artista");
     private final TextField tAlbum   = txt("Álbum");
     private final TextField tDuracao = txt("Duração (segundos)");
     private final ComboBox<Genero> cGenero = new ComboBox<>(
             FXCollections.observableArrayList(Genero.values()));
-
-    // Guarda a música que está em edição.
-    // Se for null, o botão "Adicionar" cria nova.
-    // Se não for null, o mesmo botão atualiza essa música.
-    private Musica emEdicao;
-
-    // Referência ao botão pra trocar o texto entre "Adicionar" e "Salvar"
-    private final Button btnSalvar = new Button("Adicionar");
 
     public MusicaPane(){
         setPadding(new Insets(10));
@@ -59,7 +53,7 @@ public class MusicaPane extends BorderPane implements Refreshable {
         // O TableView precisa saber, para cada coluna, "que texto eu mostro
         // pra cada linha?". Quem responde isso é a setCellValueFactory.
         //
-        // O JavaFX espera receber uma "Property" (SimpleStringProperty,
+        // O JavaFX espera receber uma "Property" (sla SimpleStringProperty,
         // SimpleIntegerProperty, etc). Pra colunas simples, a gente cria
         // um SimpleStringProperty na hora com o texto que quer mostrar.
         //
@@ -102,11 +96,13 @@ public class MusicaPane extends BorderPane implements Refreshable {
         setCenter(table);
 
         // ===== FORMULÁRIO (topo) =====
-        btnSalvar.setOnAction(e -> salvar());
+        Button btnAdd = new Button("Adicionar");
+        btnAdd.setOnAction(e -> adicionar());
 
         Button btnLimpar = new Button("Limpar");
         btnLimpar.setOnAction(e -> limpar());
 
+        // GridPane organiza em linha x coluna, tipo uma planilha.
         GridPane form = new GridPane();
         form.setHgap(6);
         form.setVgap(6);
@@ -114,24 +110,24 @@ public class MusicaPane extends BorderPane implements Refreshable {
         form.addRow(1, new Label("Artista:"),  tArtista);
         form.addRow(2, new Label("Álbum:"),    tAlbum);
         form.addRow(3, new Label("Duração:"),  tDuracao, new Label("Gênero:"), cGenero);
-        form.addRow(4, btnSalvar, btnLimpar);
+        form.addRow(4, btnAdd, btnLimpar);
         setTop(form);
 
         // ===== BOTÕES DE AÇÃO (rodapé) =====
         Button btnEditar  = new Button("Editar selecionada");
-        btnEditar.setOnAction(e -> carregarParaEdicao());
+        btnEditar.setOnAction(e -> editarSelecionada());     // TODO
 
         Button btnExcluir = new Button("Excluir selecionada");
-        btnExcluir.setOnAction(e -> excluirSelecionada());
+        btnExcluir.setOnAction(e -> excluirSelecionada());   // TODO
 
         setBottom(new ToolBar(btnEditar, btnExcluir));
 
+        // Carga inicial dos dados na tabela
         refresh();
     }
 
-    // O botão "Adicionar/Salvar" faz CREATE ou UPDATE dependendo se
-    // estamos em modo edição ou não (emEdicao != null).
-    private void salvar(){
+    // Lê o formulário e manda inserir.
+    private void adicionar(){
         String titulo = tTitulo.getText().trim();
         if (titulo.isBlank()) return;
 
@@ -139,52 +135,40 @@ public class MusicaPane extends BorderPane implements Refreshable {
         try { duracao = Integer.parseInt(tDuracao.getText().trim()); }
         catch (NumberFormatException ex) { duracao = 0; }
 
-        if (emEdicao == null){
-            // modo CREATE
-            dao.insert(titulo, tArtista.getText(), tAlbum.getText(),
-                       duracao, cGenero.getValue());
-        } else {
-            // modo UPDATE
-            dao.update(emEdicao.id(), titulo, tArtista.getText(), tAlbum.getText(),
-                       duracao, cGenero.getValue());
-        }
+        dao.insert(titulo, tArtista.getText(), tAlbum.getText(),
+                   duracao, cGenero.getValue());
         limpar();
         refresh();
     }
 
-    // "Editar selecionada" copia os dados da linha selecionada
-    // pro formulário e troca o botão pra "Salvar".
-    private void carregarParaEdicao(){
-        Musica sel = table.getSelectionModel().getSelectedItem();
-        if (sel == null) return;
-
-        emEdicao = sel;
-        tTitulo.setText(sel.titulo());
-        tArtista.setText(sel.artista());
-        tAlbum.setText(sel.album());
-        tDuracao.setText(String.valueOf(sel.duracaoSegundos()));
-        cGenero.setValue(sel.genero());
-
-        btnSalvar.setText("Salvar");
+    // TODO - editar a música selecionada na tabela
+    // Passos:
+    // 1 - pegar a música selecionada na tabela:
+    //         Musica sel = table.getSelectionModel().getSelectedItem();
+    //     Se sel for null, sai do método (nada selecionado).
+    // 2 - ler os campos do formulário (igual ao adicionar()).
+    // 3 - chamar dao.update(sel.id(), titulo, artista, album, duracao, genero).
+    // 4 - chamar limpar() e refresh().
+    private void editarSelecionada(){
+        // TODO
     }
 
+    // TODO - excluir a música selecionada na tabela
+    // Passos:
+    // 1 - pegar a selecionada (table.getSelectionModel().getSelectedItem()).
+    // 2 - se for null, sai.
+    // 3 - dao.delete(sel.id()).
+    // 4 - refresh().
     private void excluirSelecionada(){
-        Musica sel = table.getSelectionModel().getSelectedItem();
-        if (sel == null) return;
-        dao.delete(sel.id());
-        limpar();
-        refresh();
+        // TODO
     }
 
-    // Limpa o formulário e sai do "modo edição"
     private void limpar(){
-        emEdicao = null;
         tTitulo.clear();
         tArtista.clear();
         tAlbum.clear();
         tDuracao.clear();
         cGenero.getSelectionModel().selectFirst();
-        btnSalvar.setText("Adicionar");
     }
 
     // Vem da interface Refreshable. Chamado pelo MainApp quando a aba

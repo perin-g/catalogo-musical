@@ -46,29 +46,16 @@ public final class MongoConfig {
         if (musicas().countDocuments() > 0) return;
 
         musicas().insertMany(Arrays.asList(
-                nova("Bohemian Rhapsody",      "Queen",            "A Night at the Opera",       354, "ROCK"),
-                nova("Smells Like Teen Spirit","Nirvana",          "Nevermind",                  301, "ROCK"),
-                nova("Hotel California",       "Eagles",           "Hotel California",           391, "ROCK"),
-
-                nova("Billie Jean",            "Michael Jackson",  "Thriller",                   294, "POP"),
-                nova("Shape of You",           "Ed Sheeran",       "Divide",                     233, "POP"),
-                nova("Blinding Lights",        "The Weeknd",       "After Hours",                200, "POP"),
-
-                nova("Garota de Ipanema",      "Tom Jobim",        "Getz/Gilberto",              162, "MPB"),
-                nova("Águas de Março",         "Elis Regina",      "Elis & Tom",                 211, "MPB"),
-                nova("Construção",             "Chico Buarque",    "Construção",                 378, "MPB"),
-
-                nova("Strobe",                 "deadmau5",         "For Lack of a Better Name",  633, "ELETRONICO"),
-                nova("Levels",                 "Avicii",           "Levels",                     205, "ELETRONICO"),
-
-                nova("Für Elise",              "Beethoven",        "Bagatelles",                 180, "CLASSICO"),
-                nova("Clair de Lune",          "Debussy",          "Suite bergamasque",          300, "CLASSICO"),
-
-                nova("Take Five",              "Dave Brubeck",     "Time Out",                   324, "JAZZ"),
-                nova("So What",                "Miles Davis",      "Kind of Blue",               565, "JAZZ"),
-
-                nova("Lose Yourself",          "Eminem",           "8 Mile",                     326, "RAP"),
-                nova("HUMBLE.",                "Kendrick Lamar",   "DAMN.",                      177, "RAP")
+                nova("Bohemian Rhapsody",      "Queen",            "A Night at the Opera", 354, "ROCK"),
+                nova("Smells Like Teen Spirit","Nirvana",          "Nevermind",            301, "ROCK"),
+                nova("Billie Jean",            "Michael Jackson",  "Thriller",             294, "POP"),
+                nova("Shape of You",           "Ed Sheeran",       "Divide",               233, "POP"),
+                nova("Garota de Ipanema",      "Tom Jobim",        "Getz/Gilberto",        162, "MPB"),
+                nova("Águas de Março",         "Elis Regina",      "Elis & Tom",           211, "MPB"),
+                nova("Levels",                 "Avicii",           "Levels",               205, "ELETRONICO"),
+                nova("Für Elise",              "Beethoven",        "Bagatelles",           180, "CLASSICO"),
+                nova("Take Five",              "Dave Brubeck",     "Time Out",             324, "JAZZ"),
+                nova("Lose Yourself",          "Eminem",           "8 Mile",               326, "RAP")
         ));
     }
 
