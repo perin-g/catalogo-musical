@@ -1,0 +1,69 @@
+Trabalho — Catálogo Musical
+
+Individual !!!
+SEM IA COPIADO !!!
+Peso: 1.5 Ponto
+
+
+O QUE JÁ ESTÁ PRONTO
+
+O esqueleto compila e roda. A aba "Músicas" já lista as músicas do
+banco, cadastra novas e persiste no MongoDB. As outras duas abas
+mostram placeholders.
+
+Tudo o que falta está marcado com // TODO nos arquivos. Os comentários
+ao lado de cada TODO explicam o caminho de implementação.
+
+
+O QUE VOCÊS PRECISAM IMPLEMENTAR
+
+1) MusicaDao
+   - findByGenero(Genero)
+   - update(id, titulo, artista, album, duracaoSegundos, genero)
+   - delete(id)
+   - countByGenero()
+
+2) MusicaPane
+   - botão "Editar selecionada" carregando os dados no formulário
+   - botão "Excluir selecionada"
+
+3) PlaylistDao (inteiro)
+   - findAll()
+   - insert(nome)
+   - adicionarMusica(playlistId, musicaId)
+   - removerMusica(playlistId, musicaId)
+   - renomear(playlistId, novoNome)
+   - delete(id)
+
+4) PlaylistPane (inteiro)
+   - três colunas lado a lado: playlists / músicas da playlist
+     selecionada / biblioteca
+   - botões "+ Nova", "Renomear" e "Excluir" para playlists
+   - botão "<< Remover da playlist" (col. 2 -> col. 1)
+   - botão "Adicionar à playlist >>" (col. 3 -> col. 1)
+   - label com "N música(s), duração total mm:ss"
+     (usem o MusicaDao.somaDuracao que já está pronto)
+
+5) StatsPane
+   - popular o PieChart usando dao.countByGenero()
+
+
+EXTRAS (OPCIONAIS)
+
+a) Campo de busca na aba Músicas que filtra a tabela conforme o
+   usuário digita.
+b) Aviso (Alert) quando o usuário tenta adicionar uma música que já
+   está na playlist.
+c) Aba "Tocando agora" que troca a música selecionada da playlist a
+   cada N segundos.
+d) Exportar a playlist selecionada como arquivo .txt.
+
+
+
+OBSERVAÇÃO
+
+Vocês podem (e devem) consultar livremente o código do Quiz Battle
+para entender os padrões — DAO, conexão com Mongo, montagem de tela
+com TabPane, etc. A maior parte do que esse trabalho pede é uma
+extensão do que já fizemos lá.
+
